@@ -1,8 +1,6 @@
 package server
 
 import (
-	"govirgo/handlers/note"
-	"govirgo/handlers/task"
 	"govirgo/internal/router"
 	"log"
 	"net/http"
@@ -10,9 +8,6 @@ import (
 
 func Start() {
 	router := router.NewRouter()
-
-	task.RegisterRoutes(router)
-	note.RegisterRoutes(router)
 
 	addr := ":8080"
 	log.Printf("🚀 GoVirgo listening on %s\n", addr)

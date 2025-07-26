@@ -8,7 +8,7 @@ import (
 )
 
 func CreateHandler(name string) error {
-	dir := filepath.Join("handlers", name) // moved to root-level handlers
+	dir := filepath.Join("apps", name)
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
 		err = os.MkdirAll(dir, 0755)
 		if err != nil {
