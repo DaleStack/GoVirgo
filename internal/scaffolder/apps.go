@@ -9,44 +9,56 @@ import (
 
 func CreateHandler(name string) error {
 	dir := filepath.Join("apps", name)
-	if _, err := os.Stat(dir); os.IsNotExist(err) {
-		err = os.MkdirAll(dir, 0755)
-		if err != nil {
-			return err
-		}
+	if err := os.MkdirAll(dir, 0755); err != nil {
+		return err
 	}
 
-	filePath := filepath.Join(dir, "routes.go")
-	if _, err := os.Stat(filePath); err == nil {
-		return errors.New("routes.go already exists — skipping scaffolding")
+	routerPath := filepath.Join(dir, "router.go")
+	if _, err := os.Stat(routerPath); err == nil {
+		return errors.New("router.go already exists — skipping scaffolding")
 	}
 
-	f, err := os.Create(filePath)
+	file, err := os.Create(routerPath)
 	if err != nil {
 		return err
 	}
-	defer f.Close()
+	defer file.Close()
 
-	const handlerTemplate = `package {{.Name}}
+	const routerTemplate = `package {{.Name}}
 
 import (
     "net/http"
-    "govirgo/internal/core"
+    "github.com/go-chi/chi/v5"
 )
 
-func RegisterRoutes(router *core.Router) {
-    router.Handle(http.MethodGet, "/{{.Name}}", getHandler)
+func RegisterRoutes(r chi.Router) {
+    r.Route("/{{.Name}}", func(r chi.Router) {
+        r.Get("/", getAllHandler)
+        r.Get("/{id}", getByIDHandler)
+        r.Post("/", createHandler)
+        r.Delete("/{id}", deleteHandler)
+    })
 }
 
-func getHandler(w http.ResponseWriter, r *http.Request) {
-    w.Write([]byte("{{.Name}} handler is alive!"))
+func getAllHandler(w http.ResponseWriter, r *http.Request) {
+    w.Write([]byte("GET all {{.Name}}"))
+}
+
+func getByIDHandler(w http.ResponseWriter, r *http.Request) {
+    id := chi.URLParam(r, "id")
+    w.Write([]byte("GET {{.Name}} with ID: " + id))
+}
+
+func createHandler(w http.ResponseWriter, r *http.Request) {
+    w.Write([]byte("POST new {{.Name}}"))
+}
+
+func deleteHandler(w http.ResponseWriter, r *http.Request) {
+    id := chi.URLParam(r, "id")
+    w.Write([]byte("DELETE {{.Name}} with ID: " + id))
 }
 `
 
-	tmpl, err := template.New("handler").Parse(handlerTemplate)
-	if err != nil {
-		return err
-	}
-
-	return tmpl.Execute(f, struct{ Name string }{Name: name})
+	t := template.Must(template.New("router").Parse(routerTemplate))
+	return t.Execute(file, struct{ Name string }{Name: name})
 }

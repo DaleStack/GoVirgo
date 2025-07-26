@@ -2,31 +2,18 @@ package router
 
 import (
 	"net/http"
+
+	"github.com/go-chi/chi/v5"
 )
 
 type Router struct {
-	routes map[string]map[string]http.HandlerFunc
+	*chi.Mux
 }
 
-func NewRouter() *Router {
-	return &Router{
-		routes: make(map[string]map[string]http.HandlerFunc),
-	}
+func New() *Router {
+	return &Router{chi.NewRouter()}
 }
 
-func (r *Router) Handle(method, path string, handler http.HandlerFunc) {
-	if r.routes[method] == nil {
-		r.routes[method] = make(map[string]http.HandlerFunc)
-	}
-	r.routes[method][path] = handler
-}
-
-func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
-	if methodRoutes, ok := r.routes[req.Method]; ok {
-		if handler, ok := methodRoutes[req.URL.Path]; ok {
-			handler(w, req)
-			return
-		}
-	}
-	http.NotFound(w, req)
+func (r *Router) MethodHandle(method, pattern string, handler http.HandlerFunc) {
+	r.Method(method, pattern, handler)
 }
