@@ -1,7 +1,6 @@
 package server
 
 import (
-	"govirgo/apps/task"
 	"govirgo/internal/router"
 	"log"
 	"net/http"
@@ -10,10 +9,9 @@ import (
 func BuildHandler() http.Handler {
 	r := router.New()
 
-	//Register application route here
-	task.RegisterRoutes(r)
+	RegisterAllRoutes(r)
 
-	//*IGNORE: Test Route
+	// For testing: health check endpoint
 	r.Get("/health", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("OK"))
