@@ -41,19 +41,21 @@ func RegisterRoutes(r chi.Router) {
 }
 
 func getAllHandler(w http.ResponseWriter, r *http.Request) {
-    w.Write([]byte("GET all {{.Name}}"))
+    w.Header().Set("Content-Type", "application/json")
 }
 
 func getByIDHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
     id := chi.URLParam(r, "id")
-    w.Write([]byte("GET {{.Name}} with ID: " + id))
 }
 
 func createHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
     w.Write([]byte("POST new {{.Name}}"))
 }
 
 func deleteHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
     id := chi.URLParam(r, "id")
     w.Write([]byte("DELETE {{.Name}} with ID: " + id))
 }
