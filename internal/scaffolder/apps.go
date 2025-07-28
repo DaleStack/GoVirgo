@@ -47,10 +47,11 @@ func getAllHandler(w http.ResponseWriter, r *http.Request) {
 func getByIDHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
     id := chi.URLParam(r, "id")
+    w.Write([]byte("GET {{.Name}} with ID: " + id))
 }
 
 func createHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Content-Type", "application/json")s
     w.Write([]byte("POST new {{.Name}}"))
 }
 
